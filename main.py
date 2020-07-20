@@ -21,14 +21,42 @@ async def connect(request, ws):
 	while running:
 		in_data = await ws.recv()
 		data = json.loads(in_data)
-		action = data.get('action')
+		action = data.get('action', False)
 		# Connection routine
 		if action == 'connect':
-			stat = connection.status
-			await connection.ws.send(json.dumps({"OK": 200, "object": stat}))
+			# TODO: write clear docs
+			connection.uuid = data.get("uuid")
+			connection.status = "ONLINE"
+			connection.party_status = True
+			connection.party_id = data.get("uuid")
+			# TODO: notify every one in connection list that user is ONLINE
+			# TODO: update player count
 
-		if CONNECTIONS:
-			CONNECTIONS.remove(connection)
+		# Notification routine
+		if action == 'notification':
+			print('hello')
+			if data.get('type', 0) == 1:
+				for user in CONNECTIONS:
+					if user.uuid == data.get("uuid", False):
+						try:
+							await user.ws.send(json.dumps({
+								"action": "notification"
+							}))
+						except:
+							pass
+		if action == 'friend_request_confirm':
+			for user in CONNECTIONS:
+				if user.uuid == data.get("uuid", False):
+					try:
+						await user.ws.send(json.dumps({
+							"action": "friend_confirmed",
+							"uuid": data.get("uuid"),
+							"friend": data.get("friend")
+						}))
+					except:
+						pass
+
+	CONNECTIONS.remove(connection)
 
 if __name__ == "__main__":
-	app.run(host="0.0.0.0", port=8000, protocol=WebSocketProtocol)
+	app.run(host="0.0.0.0", port=8003, protocol=WebSocketProtocol)
