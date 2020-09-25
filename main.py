@@ -24,7 +24,7 @@ async def connect(request, ws):
 		in_data = await ws.recv()
 		data = json.loads(in_data)
 		action = data.get('action', False)
-		uuid = data.get("uuid")
+		uuid = data.get("uuid", False)
 		# Connection routine
 		logger.info(request.ip + "'s action is [" + action + "]")
 		if action == 'connect':
@@ -72,6 +72,27 @@ async def connect(request, ws):
 						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
 			else:
 				logger.error("User with uuid=[" + uuid + "] is not online")
+		elif action == 'new_server': # Check if uuid required
+			for user in CONNECTIONS:
+				try:
+					await user.ws.send(json.dumps({
+						"action": "new_server",
+					}))
+					logger.info(request.ip + "'s [" + action + "] success")
+				except:
+					logger.error(request.ip + "'s [" + action + "] failed: cannot send")
+		elif action == 'invite':
+			inviter = data.get("inviter")
+			for user in CONNECTIONS:
+				if user.uuid == uuid:
+					try:
+						await user.ws.send(json.dumps({
+							"action": "invite",
+							"inviter": inviter
+						}))
+						logger.info(request.ip + "'s [" + action + "] success")
+					except:
+						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
 
 	CONNECTIONS.remove(connection)
 
