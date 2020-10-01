@@ -81,6 +81,7 @@ async def connect(request, ws):
 					logger.info(request.ip + "'s [" + action + "] success")
 				except:
 					logger.error(request.ip + "'s [" + action + "] failed: cannot send")
+					pass
 		elif action == 'invite':
 			inviter = data.get("inviter")
 			for user in CONNECTIONS:

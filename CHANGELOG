@@ -4,3 +4,17 @@
 01-07-2020
 + `NEW` Connection Class created
 + `NEW` handling connection created
+
+## Release 0.0.2
+20-07-2020
++ `NEW` notification
++ `NEW` friend request confirm
+
+## Release 0.0.3
+24-07-2020
++ `NEW` logger configured
+
+## Release 0.0.4
+01-10-2020
++ `NEW` new public server message
++ `NEW` send invite to message
