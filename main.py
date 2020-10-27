@@ -94,6 +94,18 @@ async def connect(request, ws):
 						logger.info(request.ip + "'s [" + action + "] success")
 					except:
 						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
+		elif action == 'white_list_update':
+			server = data.get("server")
+			for user in CONNECTIONS:
+				if user.uuid == server:
+					try:
+						await user.ws.send(json.dumps({
+							"action": "white_list_update",
+							"added": data.get("added")
+							}))
+						logger.info(request.ip + "'s [" + action + "] success")
+					except Exception as e:
+						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
 
 	CONNECTIONS.remove(connection)
 
