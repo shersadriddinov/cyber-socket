@@ -106,7 +106,24 @@ async def connect(request, ws):
 						logger.info(request.ip + "'s [" + action + "] success")
 					except Exception as e:
 						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
-
+		elif action == 'stat':
+			user_id = data.get('user')
+			for user in CONNECTIONS:
+				if user.uuid == user_id:
+					try:
+						await user.ws.send(json.dumps({
+							"action": "stat",
+							"experience": data.get("experience"),
+							"kill": data.get("kill"),
+							"death": data.get("death"),
+							"damage": data.get("damage"),
+							"ingame_actions": data.get("ingame_actions"),
+							"place": data.get("place"),
+							"game": data.get("game")
+							}))
+						logger.info(request.ip + "'s [" + action + "] success")
+					except Exception as e:
+						logger.error(request.ip + "'s [" + action + "] failed: cannot send")
 	CONNECTIONS.remove(connection)
 
 if __name__ == "__main__":
