@@ -114,6 +114,7 @@ async def connect(request, ws):
 						await user.ws.send(json.dumps({
 							"action": "stat",
 							"experience": data.get("experience"),
+							"balance": data.get("balance"),
 							"kill": data.get("kill"),
 							"death": data.get("death"),
 							"damage": data.get("damage"),
